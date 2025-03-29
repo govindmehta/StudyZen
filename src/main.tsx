@@ -1,36 +1,76 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import { ClerkProvider } from "@clerk/clerk-react"
+// import React from "react";
+// import ReactDOM from "react-dom/client";
+// import App from "./App.tsx";
+// import "./index.css";
+// import { ClerkProvider } from "@clerk/clerk-react";
 
-// Get the publishable key if available
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
+// // Get the Clerk Publishable Key from Environment Variables
+// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
 
-// Create a wrapper component that conditionally uses ClerkProvider
+// if (!PUBLISHABLE_KEY) {
+//   console.error("❌ Clerk Publishable Key is missing! Please check your environment variables.");
+// }
+
+// // Wrapper Component to Handle Clerk Authentication
+// const AppWithAuth = () => {
+//   return (
+//     <ClerkProvider
+//       publishableKey={PUBLISHABLE_KEY}
+//       signInUrl="/sign-in"
+//       signUpUrl="/sign-up"
+//       signInFallbackRedirectUrl="/dashboard" // ✅ Redirect after Sign-in
+//       signUpFallbackRedirectUrl="/dashboard" // ✅ Redirect after Sign-up
+//       afterSignOutUrl="/" // ✅ Redirect to home after logout
+//     >
+//       <App />
+//     </ClerkProvider>
+//   );
+// };
+
+// // Render the Application
+// ReactDOM.createRoot(document.getElementById("root")!).render(
+//   <React.StrictMode>
+//     <AppWithAuth />
+//   </React.StrictMode>
+// );
+
+
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import { ClerkProvider } from "@clerk/clerk-react";
+import { BrowserRouter } from "react-router-dom";
+
+// Get the Clerk Publishable Key from Environment Variables
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "";
+
+if (!PUBLISHABLE_KEY) {
+  console.error("❌ Clerk Publishable Key is missing! Please check your environment variables.");
+}
+
+// Wrapper Component to Handle Clerk Authentication
 const AppWithAuth = () => {
-  // If publishable key is available, use ClerkProvider
-  if (PUBLISHABLE_KEY) {
-    return (
-      <ClerkProvider 
-        publishableKey={PUBLISHABLE_KEY}
-        clerkJSVersion="5.56.0-snapshot.v20250312225817"
-        signInUrl="/sign-in"
-        signUpUrl="/sign-up"
-        signInFallbackRedirectUrl="/"
-        signUpFallbackRedirectUrl="/"
-        afterSignOutUrl="/">
+  return (
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      // navigate={(to) => window.location.href = to}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
+    >
+      <BrowserRouter>
         <App />
-      </ClerkProvider>
-    );
-  }
-  
-  // Otherwise, just render the App directly without authentication
-  return <App />;
+      </BrowserRouter>
+    </ClerkProvider>
+  );
 };
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// Render the Application
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AppWithAuth />
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

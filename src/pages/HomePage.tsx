@@ -1,10 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Router, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookText, Clock } from 'lucide-react';
 
 const HomePage = () => {
+
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
       {/* Navbar */}
@@ -19,8 +22,8 @@ const HomePage = () => {
         <div className="flex items-center gap-3">
           {!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ? (
             <>
-              <Button variant="ghost" size="sm">Sign In</Button>
-              <Button>Sign Up</Button>
+              <Button variant="ghost" size="sm" onClick={()=>navigate('/sign-in')}>Sign In</Button>
+              <Button onClick={()=>navigate('/sign-up')}>Sign Up</Button>
             </>
           ) : (
             <>
