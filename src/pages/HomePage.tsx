@@ -47,7 +47,7 @@ const HomePage = () => {
           </p>
         </div>
         
-        {/* Search Input */}
+        {/* Search Input
         <div className="relative max-w-2xl mx-auto">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <Search className="h-5 w-5 text-muted-foreground" />
@@ -60,7 +60,16 @@ const HomePage = () => {
             <BookText className="h-5 w-5 mr-2" />
             Start Learning
           </Button>
-        </div>
+        </div> */}
+
+            <div className="flex flex-col justify-center items-center w-full mt-8">
+            <Button className="px-8 py-4 text-lg font-semibold shadow-lg">
+              Get Started 
+            </Button>
+            </div>
+        
+
+        
         
         {/* Features */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20">

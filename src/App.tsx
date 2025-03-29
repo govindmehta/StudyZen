@@ -133,6 +133,9 @@ import NotFound from "./pages/NotFound";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import HomePage from "./pages/HomePage";
+import Table from "./pages/Table";
+import Flashcards from "./pages/Flashcards";
+import StudyAssistant from "./pages/StudyAssitant";
 
 const queryClient = new QueryClient();
 
@@ -197,6 +200,36 @@ const App = () => (
             <ProtectedRoute>
               <MainLayout>
                 <Timer />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/table"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Table />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flash-cards"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Flashcards />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/study-assistant"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <StudyAssistant />
               </MainLayout>
             </ProtectedRoute>
           }

@@ -6,7 +6,10 @@ import {
   SquarePen, 
   Clock, 
   Settings,
-  LogOut
+  LogOut,
+  Table,
+  SquareStack,
+  Bot
 } from 'lucide-react';
 import { useClerk, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
@@ -24,9 +27,24 @@ const navItems: NavItem[] = [
     icon: <LayoutDashboard className="h-5 w-5" />,
   },
   {
+    title: "Study Assistant",
+    href: "/study-assistant",
+    icon: <Bot className="h-5 w-5" />,
+  },
+  {
     title: "Quizzes",
     href: "/quizzes",
     icon: <SquarePen className="h-5 w-5" />,
+  },
+  {
+    title: "Flash Cards",
+    href: "/flash-cards",
+    icon: <SquareStack className="h-5 w-5" />,
+  },
+  {
+    title: "Time-Table",
+    href: "/table",
+    icon: <Table className="h-5 w-5" />,
   },
   {
     title: "Study Timer",
