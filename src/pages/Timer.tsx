@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,23 +14,91 @@ import {
 } from 'lucide-react';
 
 const Timer = () => {
-  const [timerMode, setTimerMode] = useState("pomodoro");
-  const [isRunning, setIsRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
-  const [timerSettings, setTimerSettings] = useState({
-    pomodoro: 25 * 60,
-    shortBreak: 5 * 60,
-    longBreak: 15 * 60,
-  });
-  const [completedPomodoros, setCompletedPomodoros] = useState(0);
+  // Load saved state from localStorage or use defaults
+  const loadSavedState = () => {
+    try {
+      const savedState = localStorage.getItem('timerState');
+      if (savedState) {
+        return JSON.parse(savedState);
+      }
+    } catch (error) {
+      console.error('Error loading saved timer state:', error);
+    }
+    
+    // Default state
+    return {
+      timerMode: "pomodoro",
+      isRunning: false,
+      timeLeft: 25 * 60,
+      timerSettings: {
+        pomodoro: 25 * 60,
+        shortBreak: 5 * 60,
+        longBreak: 15 * 60,
+      },
+      completedPomodoros: 0,
+      pausedAt: null
+    };
+  };
+
+  const savedState = loadSavedState();
+  
+  const [timerMode, setTimerMode] = useState(savedState.timerMode);
+  const [isRunning, setIsRunning] = useState(savedState.isRunning);
+  const [timeLeft, setTimeLeft] = useState(savedState.timeLeft);
+  const [timerSettings, setTimerSettings] = useState(savedState.timerSettings);
+  const [completedPomodoros, setCompletedPomodoros] = useState(savedState.completedPomodoros);
+  const [pausedAt, setPausedAt] = useState(savedState.pausedAt);
+  
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    const stateToSave = {
+      timerMode,
+      isRunning,
+      timeLeft,
+      timerSettings,
+      completedPomodoros,
+      pausedAt: isRunning ? null : Date.now()
+    };
+    
+    localStorage.setItem('timerState', JSON.stringify(stateToSave));
+  }, [timerMode, isRunning, timeLeft, timerSettings, completedPomodoros]);
+  
+  // Check for time passed while away
+  useEffect(() => {
+    if (!isRunning && pausedAt === null) return;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isRunning) {
+        const now = Date.now();
+        const lastTimestamp = localStorage.getItem('lastTimestamp');
+        
+        if (lastTimestamp) {
+          const elapsedSeconds = Math.floor((now - parseInt(lastTimestamp)) / 1000);
+          if (elapsedSeconds > 0) {
+            const newTimeLeft = Math.max(0, timeLeft - elapsedSeconds);
+            setTimeLeft(newTimeLeft);
+          }
+        }
+        
+        localStorage.setItem('lastTimestamp', now.toString());
+      }
+    };
+    
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => window.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isRunning, timeLeft, pausedAt]);
   
   // Handle timer tick
   useEffect(() => {
     let interval: number | undefined;
     
     if (isRunning && timeLeft > 0) {
+      // Set the current timestamp when timer starts
+      localStorage.setItem('lastTimestamp', Date.now().toString());
+      
       interval = window.setInterval(() => {
         setTimeLeft(prevTime => prevTime - 1);
+        localStorage.setItem('lastTimestamp', Date.now().toString());
       }, 1000);
     } else if (isRunning && timeLeft === 0) {
       // Timer completed
@@ -62,15 +129,24 @@ const Timer = () => {
     setTimerMode(mode);
     setTimeLeft(timerSettings[mode as keyof typeof timerSettings]);
     setIsRunning(false);
+    setPausedAt(Date.now());
   };
   
   const toggleTimer = () => {
-    setIsRunning(!isRunning);
+    const newIsRunning = !isRunning;
+    setIsRunning(newIsRunning);
+    
+    if (newIsRunning) {
+      setPausedAt(null);
+    } else {
+      setPausedAt(Date.now());
+    }
   };
   
   const resetTimer = () => {
     setTimeLeft(timerSettings[timerMode as keyof typeof timerSettings]);
     setIsRunning(false);
+    setPausedAt(Date.now());
   };
   
   const formatTime = (seconds: number) => {
@@ -106,7 +182,7 @@ const Timer = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="flex flex-col">
-          <Tabs defaultValue="pomodoro" onValueChange={handleChangeMode} className="mb-6">
+          <Tabs defaultValue={timerMode} value={timerMode} onValueChange={handleChangeMode} className="mb-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="pomodoro">
                 <Clock className="h-4 w-4 mr-2" /> Pomodoro
