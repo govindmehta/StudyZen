@@ -9,7 +9,8 @@ import {
   LogOut,
   Table,
   SquareStack,
-  Bot
+  Bot,
+  ArrowRight
 } from 'lucide-react';
 import { useClerk, useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
@@ -40,6 +41,11 @@ const navItems: NavItem[] = [
     title: "Flash Cards",
     href: "/flash-cards",
     icon: <SquareStack className="h-5 w-5" />,
+  },
+  {
+    title: "Flow Chart",
+    href: "/flow-chart",
+    icon: <ArrowRight className="h-5 w-5" />,
   },
   {
     title: "Time-Table",

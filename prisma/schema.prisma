@@ -13,6 +13,7 @@ model User {
   username   String     @unique
   flashcards FlashCard[]
   responses  StudyResponse[]
+   quizzes    Quiz[]
 }
 
 model FlashCard {
@@ -46,4 +47,32 @@ model StudyResponse {
   createdAt  DateTime @default(now())
   user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String?
+}
+
+
+model Quiz {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  time         Int      
+  completed    Boolean  @default(false)
+  score        Int?     // Nullable; only set if completed
+  progress     Int?     // Percentage progress (0-100)
+  thumbnail    String?  // UI styling or image reference
+  questions    QuizQuestion[]
+  createdAt    DateTime @default(now())
+}
+
+model QuizQuestion {
+  id            String   @id @default(cuid())
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId        String
+  question      String
+  options       String[] // Multiple choice options
+  correctAnswer String
+  explanation   String?  // Explanation for the correct answer
+  questionType  String   // e.g., "MCQ", "True/False", "Short Answer"
+  difficulty    String   // "Easy", "Medium", "Hard"
 }
