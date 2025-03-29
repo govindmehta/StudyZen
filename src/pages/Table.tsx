@@ -75,7 +75,7 @@ const Table: React.FC = () => {
 
                 {/* Resources */}
                 <td className="px-6 py-4 border-b border-blue-100">
-                  <span className="text-gray-500">{data.resources[index]}</span>
+                  <span className="text-gray-600">{data.resources[index]}</span>
                 </td>
               </tr>
             ))}

@@ -1,261 +1,27 @@
-// import React, { useState } from "react";
-// import ReactMarkdown from "react-markdown";
-// import { Input } from "@/components/ui/input";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Search, Send, MessageCircle, MessageSquare } from "lucide-react";
-
-// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
-
-// const components = {
-//   code({ node, inline, className, children, ...props }) {
-//     const match = /language-(\w+)/.exec(className || "");
-//     return !inline && match ? (
-//       <SyntaxHighlighter
-//         style={materialLight}
-//         language={match[1]}
-//         wrapLongLines
-//         {...props}
-//       >
-//         {String(children).replace(/\n$/, "")}
-//       </SyntaxHighlighter>
-//     ) : (
-//       <code className={className} {...props}>
-//         {children}
-//       </code>
-//     );
-//   },
-// };
-
-// const exampleData = {
-//   content:
-//     "Tokenization is the process of breaking down a text into individual units called tokens. These tokens can be words, subwords, characters, or even symbols, depending on the task and the type of tokenizer used...",
-//   examples:
-//     '**Example 1: Word-level tokenization**\nThe sentence "I love eating pizza." can be tokenized into: ["I", "love", "eating", "pizza", "."]\n\n**Example 2: Subword tokenization**\nThe word "unfortunately" can be tokenized into: ["un", "for", "tun", "ate", "ly"]\n\n**Example 3: Character-level tokenization**\nThe word "hello" can be tokenized into: ["h", "e", "l", "l", "o"]',
-//   analogies:
-//     "Think of tokenization like chopping vegetables for a recipe. You start with a whole onion (the text) and chop it into smaller pieces (tokens)...",
-//   code_example: `**Python using NLTK:**  
-//   \`\`\`python
-//   import nltk
-//   from nltk.tokenize import word_tokenize
-  
-//   nltk.download('punkt')
-//   text = "Tokenization is fun!" 
-  
-//   words = word_tokenize(text)
-//   print("Word tokens:", words)
-//   \`\`\`
-  
-//   **Python using spaCy:**  
-//   \`\`\`python
-//   import spacy
-  
-//   nlp = spacy.load("en_core_web_sm")
-//   text = "This is another example."
-  
-//   doc = nlp(text)
-//   for token in doc:
-//       print(token.text)
-//   \`\`\``,
-//   keywords: ["Tokenization", "NLP", "Tokens", "Subword", "Word"],
-//   summary:
-//     "1. Tokenization breaks down text into smaller units (tokens).\n2. It helps computers process text for NLP tasks.\n3. Different tokenization methods exist based on the task.",
-// };
-
-// const StudyAssistant = () => {
-//   const [messages, setMessages] = useState([
-//     { sender: "assistant", text: "Hello! How can I assist you today?" },
-//   ]);
-//   const [input, setInput] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [isChatOpen, setIsChatOpen] = useState(false);
-
-//   const handleSendMessage = async () => {
-//     if (input.trim() === "") return;
-//     const userMessage = { sender: "user", text: input };
-//     setMessages((prev) => [...prev, userMessage]);
-//     setInput("");
-//     setLoading(true);
-
-//     try {
-//       const response = await fetch(
-//         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCXhLlkUjr95LY4t-82QhB8fszgIUzhN-Q`,
-//         {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({ message: input }),
-//         }
-//       );
-
-//       if (!response.ok) throw new Error("Failed to fetch response");
-//       const data = await response.json();
-//       const assistantText = data.text || "Sorry, I couldn't process that.";
-//       setMessages((prev) => [
-//         ...prev,
-//         { sender: "assistant", text: assistantText },
-//       ]);
-//     } catch (error) {
-//       setMessages((prev) => [
-//         ...prev,
-//         { sender: "assistant", text: `Error: ${error.message}` },
-//       ]);
-//     }
-
-//     setLoading(false);
-//   };
-
-//   return (
-//     <div className="w-full h-[100vh] flex flex-col mx-auto space-y-6 p-6">
-//       {/* Search Bar */}
-//       <div className="relative w-full">
-//         <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-//           <Search className="h-6 w-6 text-muted-foreground" />
-//         </div>
-//         <Input
-//           className="pl-12 py-4 text-lg shadow-md focus-visible:ring-primary w-full max-w-2xl"
-//           placeholder="Search for topics or concepts..."
-//         />
-//         <Button className="absolute right-2 top-2 px-6 py-3 text-lg">
-//           <MessageCircle className="h-6 w-6 mr-2" /> Start Learning
-//         </Button>
-//       </div>
-
-//       {/* Empty div beneath the input box */}
-//       <div className="h-10"></div>
-
-//       {/* Formatted Data Section */}
-//       <Card className="p-6 shadow-lg rounded-xl bg-white">
-//         <CardContent className="space-y-4">
-//           <h2 className="text-4xl font-bold underline">
-//             📌 Understanding Tokenization
-//           </h2>
-//           <p className="text-lg">{exampleData.content}</p>
-
-//           <h3 className="text-2xl font-bold">🔍 Examples</h3>
-//           <div className="text-lg">
-//             <ReactMarkdown>{exampleData.examples}</ReactMarkdown>
-//           </div>
-
-//           <h3 className="text-2xl font-bold">💡 Analogy</h3>
-//           <p className="text-lg">{exampleData.analogies}</p>
-
-//           <h3 className="text-2xl font-bold">🖥️ Code Examples</h3>
-//           <div className="text-lg">
-//             <ReactMarkdown components={components}>
-//               {exampleData.code_example}
-//             </ReactMarkdown>
-//           </div>
-
-//           <h3 className="text-2xl font-bold">📚 Keywords</h3>
-//           <div className="flex flex-wrap gap-2">
-//             {exampleData.keywords.map((keyword, index) => (
-//               <span
-//                 key={index}
-//                 className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-lg"
-//               >
-//                 {keyword}
-//               </span>
-//             ))}
-//           </div>
-
-//           <h3 className="text-2xl font-bold">📜 Summary</h3>
-//           <div className="text-lg">
-//             <ReactMarkdown>{exampleData.summary}</ReactMarkdown>
-//           </div>
-//         </CardContent>
-//       </Card>
-
-//       {/* Floating Chat Button */}
-//       <button
-//         className="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg flex items-center justify-center"
-//         onClick={() => setIsChatOpen(!isChatOpen)}
-//       >
-//         <MessageSquare className="h-6 w-6" />
-//       </button>
-
-//       {/* Chat Window */}
-//       {isChatOpen && (
-//         <div className="fixed bottom-20 right-6 w-80 h-[500px] bg-white shadow-xl rounded-lg flex flex-col border border-gray-300">
-//           {/* Chat Header */}
-//           <div className="bg-primary text-white p-3 flex justify-between items-center rounded-t-lg">
-//             <span className="font-semibold text-lg">Study Assistant</span>
-//             <button
-//               onClick={() => setIsChatOpen(false)}
-//               className="text-white text-lg"
-//             >
-//               ✖
-//             </button>
-//           </div>
-
-//           {/* Chat Messages */}
-//           <Card className="flex-grow overflow-hidden">
-//             <CardContent className="h-full flex flex-col overflow-y-auto p-4 space-y-2">
-//               {messages.map((msg, index) => (
-//                 <div
-//                   key={index}
-//                   className={`p-3 rounded-xl text-sm ${
-//                     msg.sender === "user"
-//                       ? "bg-primary text-primary-foreground self-end ml-auto max-w-[75%]"
-//                       : "bg-muted text-foreground max-w-[75%]"
-//                   }`}
-//                 >
-//                   <ReactMarkdown>{msg.text}</ReactMarkdown>
-//                 </div>
-//               ))}
-//               {loading && (
-//                 <div className="text-muted-foreground italic text-sm">
-//                   Thinking...
-//                 </div>
-//               )}
-//             </CardContent>
-//           </Card>
-
-//           {/* Input Bar */}
-//           <div className="relative w-full flex p-3 border-t border-gray-200">
-//             <Input
-//               className="pl-4 py-2 text-sm focus-visible:ring-primary w-full"
-//               placeholder="Type a message..."
-//               value={input}
-//               onChange={(e) => setInput(e.target.value)}
-//               onKeyDown={(e) =>
-//                 e.key === "Enter" && !e.shiftKey && handleSendMessage()
-//               }
-//               disabled={loading}
-//             />
-//             <Button
-//               onClick={handleSendMessage}
-//               className="ml-2 px-4 py-2 text-sm"
-//               disabled={loading || input.trim() === ""}
-//             >
-//               <Send className="h-5 w-5" />
-//             </Button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default StudyAssistant;
-
-
-
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Send, MessageCircle, MessageSquare } from "lucide-react";
+import { Search, Send, MessageCircle, MessageSquare, Loader2, X } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Loader from "@/components/Loader";
 
-const components = {
+// Markdown components configuration
+const markdownComponents = {
   code({ node, inline, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || "");
     return !inline && match ? (
-      <SyntaxHighlighter style={materialLight} language={match[1]} wrapLongLines {...props}>
+      <SyntaxHighlighter
+        style={materialLight}
+        language={match[1]}
+        wrapLongLines
+        {...props}
+      >
         {String(children).replace(/\n$/, "")}
       </SyntaxHighlighter>
     ) : (
@@ -264,7 +30,32 @@ const components = {
       </code>
     );
   },
+  // Add styling for headings
+  h1: (props) => <h1 {...props} className="text-3xl font-bold my-4" />,
+  h2: (props) => <h2 {...props} className="text-2xl font-bold my-3" />,
+  h3: (props) => <h3 {...props} className="text-xl font-semibold my-2" />,
+  h4: (props) => <h4 {...props} className="text-lg font-semibold my-2" />,
+  // Style paragraphs and lists
+  p: (props) => <p {...props} className="my-2 text-gray-800" />,
+  ul: (props) => <ul {...props} className="list-disc pl-6 my-2" />,
+  ol: (props) => <ol {...props} className="list-decimal pl-6 my-2" />,
+  li: (props) => <li {...props} className="my-1" />,
 };
+
+// Chat message component
+const ChatMessage = ({ message, isUser }) => (
+  <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+    <div
+      className={`max-w-3/4 rounded-lg px-4 py-2 ${
+        isUser
+          ? 'bg-primary text-primary-foreground rounded-tr-none'
+          : 'bg-muted text-muted-foreground rounded-tl-none'
+      }`}
+    >
+      {message}
+    </div>
+  </div>
+);
 
 const StudyAssistant = () => {
   const [query, setQuery] = useState("");
@@ -272,102 +63,330 @@ const StudyAssistant = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    { message: "Hi there! How can I help you with your studies today?", isUser: false }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatEndRef = useRef(null);
+  const [chatPosition, setChatPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const chatRef = useRef(null);
+
+  // Auto-scroll to bottom of chat when new messages are added
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages]);
+
+  // Handle chat dragging
+  const handleMouseDown = (e) => {
+    if (chatRef.current && e.target.closest('.chat-header')) {
+      setIsDragging(true);
+      const chatRect = chatRef.current.getBoundingClientRect();
+      setChatPosition({
+        x: e.clientX - chatRect.left,
+        y: e.clientY - chatRect.top
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging && chatRef.current) {
+      const parentRect = chatRef.current.parentElement.getBoundingClientRect();
+      const newLeft = e.clientX - chatPosition.x - parentRect.left;
+      const newTop = e.clientY - chatPosition.y - parentRect.top;
+
+      // Ensure chat stays within parent bounds
+      const maxLeft = parentRect.width - chatRef.current.offsetWidth;
+      const maxTop = parentRect.height - chatRef.current.offsetHeight;
+
+      chatRef.current.style.left = `${Math.max(0, Math.min(newLeft, maxLeft))}px`;
+      chatRef.current.style.top = `${Math.max(0, Math.min(newTop, maxTop))}px`;
+      chatRef.current.style.bottom = 'auto';
+      chatRef.current.style.right = 'auto';
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   const fetchData = async () => {
     if (query.trim() === "") return;
     setLoading(true);
     setError("");
-    
-    try {
-      // const response = await axios.post("http://127.0.0.1:8000/explaination/", { subtopic: query });
-console.log("Fetching data for query:", query); // Debugging line
-      const response = await axios.post("http://127.0.0.0:8000/explaination/", {
-        subtopic: query, // Ensure the key matches the backend model
-      });
-      console.log(response)
+    setData(null); // Clear previous data
 
-      
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/explaination/?subtopic=${encodeURIComponent(query)}`
+      );
+
+      console.log("Response:", response.data);
       setData(response.data);
     } catch (err) {
+      console.error("Request failed:", err.response?.data || err.message);
       setError("Failed to fetch data. Please try again.");
-      setData(null);
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
+  };
+
+  const fetchGeminiResponse = async (prompt) => {
+    // Your Gemini API integration
+    try {
+      // Replace with your actual Gemini API endpoint and key
+      const response = await axios.post(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCXhLlkUjr95LY4t-82QhB8fszgIUzhN-Q",
+        {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+          }
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // You would typically store this in an environment variable
+            // "x-goog-api-key": process.env.NEXT_PUBLIC_GEMINI_API_KEY
+          }
+        }
+      );
+
+      return response.data.candidates[0]?.content?.parts[0]?.text || "I couldn't generate a response at this time.";
+    } catch (error) {
+      console.error("Gemini API error:", error);
+      return "Sorry, I encountered an error while processing your request.";
+    }
+  };
+
+  const handleChatSubmit = async () => {
+    if (chatInput.trim() === "") return;
+
+    // Add user message to chat
+    setChatMessages([...chatMessages, { message: chatInput, isUser: true }]);
+    const userQuestion = chatInput;
+    setChatInput("");
+    setChatLoading(true);
+
+    // Get response from Gemini API
+    try {
+      const prompt = `You are a helpful study assistant. The user is asking: "${userQuestion}"
+      Provide a helpful, educational response focused on learning. Keep your answer concise but informative.`;
+
+      const response = await fetchGeminiResponse(prompt);
+
+      setChatMessages(prev => [
+        ...prev,
+        {
+          message: response,
+          isUser: false
+        }
+      ]);
+    } catch (err) {
+      console.error("Chat request failed:", err);
+      setChatMessages(prev => [
+        ...prev,
+        {
+          message: "Sorry, I couldn't process your request at this time. Please try again later.",
+          isUser: false
+        }
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  // Process data content for better rendering
+  const processContent = (content) => {
+    if (!content) return "";
+
+    // Replace asterisks with proper markdown list items
+    let processedContent = content;
+
+    if (content.includes("Key concepts include:")) {
+      const [beforeList, afterList] = content.split("Key concepts include:");
+      let listItems = afterList.split("*").filter(item => item.trim());
+      listItems = listItems.map(item => `- ${item.trim()}`).join("\n");
+      processedContent = `${beforeList}## Key concepts include:\n\n${listItems}`;
+    }
+
+    return processedContent;
   };
 
   return (
-    <div className="w-full h-[100vh] flex flex-col mx-auto space-y-6 p-6">
-      {/* Search Bar for Query Input */}
-      <div className="relative w-full">
+    <div className="w-full min-h-[100vh] flex flex-col mx-auto space-y-6 p-6 bg-gray-50" onMouseDown={handleMouseDown}>
+      {/* Search Bar for Query Input - Made bigger */}
+      <div className="relative w-full max-w-4xl mx-auto">
         <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
           <Search className="h-6 w-6 text-muted-foreground" />
         </div>
         <Input
-          className="pl-12 py-4 text-lg shadow-md focus-visible:ring-primary w-full max-w-2xl"
+          className="pl-12 py-8 text-xl shadow-md focus-visible:ring-primary w-full bg-white rounded-xl"
           placeholder="Enter a topic to learn..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && fetchData()}
         />
-        <Button onClick={fetchData} className="absolute right-2 top-2 px-6 py-3 text-lg">
-          <MessageCircle className="h-6 w-6 mr-2" /> Search
+        <Button
+          onClick={fetchData}
+          className="absolute right-2 top-2 px-6 py-6 text-lg rounded-lg"
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+          ) : (
+            <MessageCircle className="h-5 w-5 mr-2" />
+          )}
+          Search
         </Button>
       </div>
 
-      {/* Display API Data */}
-      {loading && <p className="text-lg text-center">Loading...</p>}
-      {error && <p className="text-lg text-red-600 text-center">{error}</p>}
-      {data && (
-        <Card className="p-6 shadow-lg rounded-xl bg-white">
-          <CardContent className="space-y-6">
-            <h2 className="text-4xl font-bold underline">📌 {data.title || "Understanding the Topic"}</h2>
-            <p className="text-lg">{data.content}</p>
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded max-w-4xl mx-auto w-full">
+          <p>{error}</p>
+        </div>
+      )}
 
+      {/* Loading indicator */}
+      {loading && (
+        <div className="flex justify-center items-center p-12 max-w-5xl mx-auto w-full">
+          <div className="text-center">
+            <Loader/>
+            <p className="mt-4 text-lg text-gray-600">Fetching your learning materials...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Content Display */}
+      {!loading && data && (
+        <Card className="p-8 shadow-xl rounded-2xl bg-white w-full max-w-5xl mx-auto border border-gray-200">
+          <CardContent className="p-0 space-y-6">
+            {/* Title */}
+            <h2 className="text-4xl font-bold text-gray-900 border-b-2 pb-2">
+              📌 {data.title || "Understanding the Topic"}
+            </h2>
+
+            {/* Main Content Section */}
+            <div className="text-lg text-gray-800 leading-relaxed">
+              <ReactMarkdown components={markdownComponents}>
+                {processContent(data.content)}
+              </ReactMarkdown>
+            </div>
+
+            {/* Key Concepts Section with Styled Subheading */}
+            {data.content?.includes("Key concepts include:") && (
+              <div className="mt-6 p-6 bg-gray-50 rounded-lg border-l-4 border-blue-600 shadow-sm">
+                <h3 className="text-3xl font-bold text-gray-900 pb-2 border-b-2 border-gray-300">
+                  🔑 Key Concepts
+                </h3>
+                <ul className="list-disc pl-6 space-y-3 text-lg text-gray-800 mt-4">
+                  {data.content
+                    .split("*")
+                    .slice(1)
+                    .map((point, index) => (
+                      <li key={index} className="pl-2">
+                        {point.trim()}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Examples Section */}
             {data.examples && (
-              <>
-                <h3 className="text-2xl font-bold underline">🔍 Examples</h3>
-                <div className="text-lg">
-                  <ReactMarkdown>{data.examples}</ReactMarkdown>
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-gray-900 border-b pb-2">
+                  🔍 Examples
+                </h3>
+                <div className="text-lg text-gray-800 leading-relaxed mt-3">
+                  <ReactMarkdown components={markdownComponents}>
+                    {data.examples}
+                  </ReactMarkdown>
                 </div>
-              </>
+              </div>
             )}
 
+            {/* Analogy Section */}
             {data.analogy && (
-              <>
-                <h3 className="text-2xl font-bold underline">💡 Analogy</h3>
-                <p className="text-lg">{data.analogy}</p>
-              </>
-            )}
-
-            {data.code_example && (
-              <>
-                <h3 className="text-2xl font-bold underline">🖥️ Code Examples</h3>
-                <div className="text-lg">
-                  <ReactMarkdown components={components}>{data.code_example}</ReactMarkdown>
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-gray-900 border-b pb-2">
+                  💡 Analogy
+                </h3>
+                <div className="bg-blue-50 p-5 rounded-lg mt-3 border-l-4 border-blue-400">
+                  <ReactMarkdown components={markdownComponents}>
+                    {data.analogy}
+                  </ReactMarkdown>
                 </div>
-              </>
+              </div>
             )}
 
-            {data.keywords && (
-              <>
-                <h3 className="text-2xl font-bold underline">📚 Keywords</h3>
-                <div className="flex flex-wrap gap-2">
+            {/* Code Example Section */}
+            {data.code_example && (
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-gray-900 border-b pb-2">
+                  🖥️ Code Example
+                </h3>
+                <div className="bg-gray-100 p-4 rounded-lg mt-3">
+                  <ReactMarkdown components={markdownComponents}>
+                    {data.code_example}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
+
+            {/* Keywords Section */}
+            {data.keywords && data.keywords.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-gray-900 border-b pb-2">
+                  📚 Keywords
+                </h3>
+                <div className="flex flex-wrap gap-2 mt-3">
                   {data.keywords.map((keyword, index) => (
-                    <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-lg">
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-lg font-medium"
+                    >
                       {keyword}
                     </span>
                   ))}
                 </div>
-              </>
+              </div>
             )}
 
+            {/* Summary Section */}
             {data.summary && (
-              <>
-                <h3 className="text-2xl font-bold underline">📜 Summary</h3>
-                <div className="text-lg">
-                  <ReactMarkdown>{data.summary}</ReactMarkdown>
+              <div className="mt-6">
+                <h3 className="text-2xl font-semibold text-gray-900 border-b pb-2">
+                  📜 Summary
+                </h3>
+                <div className="bg-gray-50 p-5 rounded-lg mt-3 border-l-4 border-green-500">
+                  <ReactMarkdown components={markdownComponents}>
+                    {data.summary}
+                  </ReactMarkdown>
                 </div>
-              </>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -375,13 +394,80 @@ console.log("Fetching data for query:", query); // Debugging line
 
       {/* Floating Chat Button */}
       <button
-        className="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg flex items-center justify-center"
+        className="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary/90 transition-all"
         onClick={() => setIsChatOpen(!isChatOpen)}
       >
-        <MessageSquare className="h-6 w-6" />
+        {isChatOpen ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <MessageSquare className="h-6 w-6" />
+        )}
       </button>
+
+      {/* Draggable Chat Panel */}
+      {isChatOpen && (
+        <div
+          ref={chatRef}
+          className="fixed bottom-24 right-6 w-[600px] h-[600px] bg-white rounded-lg shadow-2xl flex flex-col z-40 border border-gray-200"
+          style={{ position: 'absolute', cursor: isDragging ? 'grabbing' : 'default' }}
+        >
+          {/* Chat Header - Made draggable */}
+          <div className="p-4 border-b flex items-center bg-primary text-white rounded-t-lg chat-header" style={{ cursor: 'grab' }}>
+            <MessageCircle className="h-5 w-5 mr-2" />
+            <h3 className="font-semibold">Study Assistant</h3>
+          </div>
+
+          {/* Chat Messages */}
+          <ScrollArea className="flex-grow p-4">
+            <div className="space-y-2">
+              {chatMessages.map((msg, index) => (
+                <ChatMessage
+                  key={index}
+                  message={msg.message}
+                  isUser={msg.isUser}
+                />
+              ))}
+              {chatLoading && (
+                <div className="flex justify-start mb-4">
+                  <div className="bg-muted rounded-lg px-4 py-2 flex items-center">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="ml-2">Typing...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+          </ScrollArea>
+
+          {/* Chat Input */}
+          <div className="p-3 border-t flex items-end gap-2">
+            <Textarea
+              className="resize-none"
+              placeholder="Ask a question..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleChatSubmit();
+                }
+              }}
+              rows={2}
+            />
+            <Button
+              size="icon"
+              onClick={handleChatSubmit}
+              disabled={chatLoading || chatInput.trim() === ""}
+              className="self-end"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default StudyAssistant;
+
