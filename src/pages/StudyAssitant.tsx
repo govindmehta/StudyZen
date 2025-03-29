@@ -4,12 +4,21 @@ import ReactMarkdown from "react-markdown";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Send, MessageCircle, MessageSquare, Loader2, X } from "lucide-react";
+import {
+  Search,
+  Send,
+  MessageCircle,
+  MessageSquare,
+  Loader2,
+  X,
+} from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Loader from "@/components/Loader";
+
+import { useUser } from "@clerk/clerk-react";
 
 // Markdown components configuration
 const markdownComponents = {
@@ -44,12 +53,12 @@ const markdownComponents = {
 
 // Chat message component
 const ChatMessage = ({ message, isUser }) => (
-  <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+  <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
     <div
       className={`max-w-3/4 rounded-lg px-4 py-2 ${
         isUser
-          ? 'bg-primary text-primary-foreground rounded-tr-none'
-          : 'bg-muted text-muted-foreground rounded-tl-none'
+          ? "bg-primary text-primary-foreground rounded-tr-none"
+          : "bg-muted text-muted-foreground rounded-tl-none"
       }`}
     >
       {message}
@@ -58,13 +67,18 @@ const ChatMessage = ({ message, isUser }) => (
 );
 
 const StudyAssistant = () => {
+  const { user } = useUser();
+  const clerkUserId = user?.id; // Get Clerk's User ID
   const [query, setQuery] = useState("");
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([
-    { message: "Hi there! How can I help you with your studies today?", isUser: false }
+    {
+      message: "Hi there! How can I help you with your studies today?",
+      isUser: false,
+    },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
@@ -82,12 +96,12 @@ const StudyAssistant = () => {
 
   // Handle chat dragging
   const handleMouseDown = (e) => {
-    if (chatRef.current && e.target.closest('.chat-header')) {
+    if (chatRef.current && e.target.closest(".chat-header")) {
       setIsDragging(true);
       const chatRect = chatRef.current.getBoundingClientRect();
       setChatPosition({
         x: e.clientX - chatRect.left,
-        y: e.clientY - chatRect.top
+        y: e.clientY - chatRect.top,
       });
     }
   };
@@ -102,10 +116,13 @@ const StudyAssistant = () => {
       const maxLeft = parentRect.width - chatRef.current.offsetWidth;
       const maxTop = parentRect.height - chatRef.current.offsetHeight;
 
-      chatRef.current.style.left = `${Math.max(0, Math.min(newLeft, maxLeft))}px`;
+      chatRef.current.style.left = `${Math.max(
+        0,
+        Math.min(newLeft, maxLeft)
+      )}px`;
       chatRef.current.style.top = `${Math.max(0, Math.min(newTop, maxTop))}px`;
-      chatRef.current.style.bottom = 'auto';
-      chatRef.current.style.right = 'auto';
+      chatRef.current.style.bottom = "auto";
+      chatRef.current.style.right = "auto";
     }
   };
 
@@ -115,16 +132,16 @@ const StudyAssistant = () => {
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
     } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging]);
 
@@ -136,11 +153,23 @@ const StudyAssistant = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/explaination/?subtopic=${encodeURIComponent(query)}`
+        `http://127.0.0.1:8000/explaination/?subtopic=${query}`
       );
 
       console.log("Response:", response.data);
       setData(response.data);
+
+      const responseSend = await axios.post("http://localhost:5000/save", {
+        subtopic: query,
+        title: response.data.title || "",
+        content: response.data.content || "",
+        examples: response.data.examples || "",
+        analogy: response.data.analogy || "",
+        codeExample: response.data.code_example || "",
+        keywords: response.data.keywords || [],
+        summary: response.data.summary || "",
+        userId: clerkUserId, // Send Clerk's User ID
+      });
     } catch (err) {
       console.error("Request failed:", err.response?.data || err.message);
       setError("Failed to fetch data. Please try again.");
@@ -162,18 +191,21 @@ const StudyAssistant = () => {
             topK: 40,
             topP: 0.95,
             maxOutputTokens: 1024,
-          }
+          },
         },
         {
           headers: {
             "Content-Type": "application/json",
             // You would typically store this in an environment variable
             // "x-goog-api-key": process.env.NEXT_PUBLIC_GEMINI_API_KEY
-          }
+          },
         }
       );
 
-      return response.data.candidates[0]?.content?.parts[0]?.text || "I couldn't generate a response at this time.";
+      return (
+        response.data.candidates[0]?.content?.parts[0]?.text ||
+        "I couldn't generate a response at this time."
+      );
     } catch (error) {
       console.error("Gemini API error:", error);
       return "Sorry, I encountered an error while processing your request.";
@@ -196,21 +228,22 @@ const StudyAssistant = () => {
 
       const response = await fetchGeminiResponse(prompt);
 
-      setChatMessages(prev => [
+      setChatMessages((prev) => [
         ...prev,
         {
           message: response,
-          isUser: false
-        }
+          isUser: false,
+        },
       ]);
     } catch (err) {
       console.error("Chat request failed:", err);
-      setChatMessages(prev => [
+      setChatMessages((prev) => [
         ...prev,
         {
-          message: "Sorry, I couldn't process your request at this time. Please try again later.",
-          isUser: false
-        }
+          message:
+            "Sorry, I couldn't process your request at this time. Please try again later.",
+          isUser: false,
+        },
       ]);
     } finally {
       setChatLoading(false);
@@ -226,8 +259,8 @@ const StudyAssistant = () => {
 
     if (content.includes("Key concepts include:")) {
       const [beforeList, afterList] = content.split("Key concepts include:");
-      let listItems = afterList.split("*").filter(item => item.trim());
-      listItems = listItems.map(item => `- ${item.trim()}`).join("\n");
+      let listItems = afterList.split("*").filter((item) => item.trim());
+      listItems = listItems.map((item) => `- ${item.trim()}`).join("\n");
       processedContent = `${beforeList}## Key concepts include:\n\n${listItems}`;
     }
 
@@ -235,7 +268,10 @@ const StudyAssistant = () => {
   };
 
   return (
-    <div className="w-full min-h-[100vh] flex flex-col mx-auto space-y-6 p-6 bg-gray-50" onMouseDown={handleMouseDown}>
+    <div
+      className="w-full min-h-[100vh] flex flex-col mx-auto space-y-6 p-6 bg-gray-50"
+      onMouseDown={handleMouseDown}
+    >
       {/* Search Bar for Query Input - Made bigger */}
       <div className="relative w-full max-w-4xl mx-auto">
         <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
@@ -246,7 +282,7 @@ const StudyAssistant = () => {
           placeholder="Enter a topic to learn..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && fetchData()}
+          onKeyDown={(e) => e.key === "Enter" && fetchData()}
         />
         <Button
           onClick={fetchData}
@@ -273,8 +309,10 @@ const StudyAssistant = () => {
       {loading && (
         <div className="flex justify-center items-center p-12 max-w-5xl mx-auto w-full">
           <div className="text-center">
-            <Loader/>
-            <p className="mt-4 text-lg text-gray-600">Fetching your learning materials...</p>
+            <Loader />
+            <p className="mt-4 text-lg text-gray-600">
+              Fetching your learning materials...
+            </p>
           </div>
         </div>
       )}
@@ -409,10 +447,16 @@ const StudyAssistant = () => {
         <div
           ref={chatRef}
           className="fixed bottom-24 right-6 w-[600px] h-[600px] bg-white rounded-lg shadow-2xl flex flex-col z-40 border border-gray-200"
-          style={{ position: 'absolute', cursor: isDragging ? 'grabbing' : 'default' }}
+          style={{
+            position: "absolute",
+            cursor: isDragging ? "grabbing" : "default",
+          }}
         >
           {/* Chat Header - Made draggable */}
-          <div className="p-4 border-b flex items-center bg-primary text-white rounded-t-lg chat-header" style={{ cursor: 'grab' }}>
+          <div
+            className="p-4 border-b flex items-center bg-primary text-white rounded-t-lg chat-header"
+            style={{ cursor: "grab" }}
+          >
             <MessageCircle className="h-5 w-5 mr-2" />
             <h3 className="font-semibold">Study Assistant</h3>
           </div>
@@ -447,7 +491,7 @@ const StudyAssistant = () => {
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleChatSubmit();
                 }
@@ -470,4 +514,3 @@ const StudyAssistant = () => {
 };
 
 export default StudyAssistant;
-
