@@ -195,6 +195,7 @@ const App = () => (
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/timer"
           element={

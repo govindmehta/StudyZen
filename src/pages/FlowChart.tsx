@@ -33,7 +33,7 @@ const FlowChart = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-10 space-y-6">
+    <div className="max-w-6xl mx-auto py-2 space-y-2">
       <Card className="shadow-md">
         <CardHeader>
           <CardTitle className="text-xl">Generate Flowchart</CardTitle>

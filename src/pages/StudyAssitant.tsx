@@ -145,6 +145,22 @@ const StudyAssistant = () => {
     };
   }, [isDragging]);
 
+  const [youtubeLinks, setYoutubeLinks] = useState([]);
+
+  // Fetch YouTube links after getting the explanation data
+  const fetchYoutubeLinks = async () => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/videos/?topic=${query}`
+      );
+      setYoutubeLinks(response.data.video_links);
+      console.log("YouTube Links:", response.data.video_links);
+      console.log("Youtube Links:", youtubeLinks);
+    } catch (err) {
+      console.error("Failed to fetch YouTube links:", err);
+    }
+  };
+
   const fetchData = async () => {
     if (query.trim() === "") return;
     setLoading(true);
@@ -159,17 +175,19 @@ const StudyAssistant = () => {
       console.log("Response:", response.data);
       setData(response.data);
 
-      const responseSend = await axios.post("http://localhost:5000/save", {
-        subtopic: query,
-        title: response.data.title || "",
-        content: response.data.content || "",
-        examples: response.data.examples || "",
-        analogy: response.data.analogy || "",
-        codeExample: response.data.code_example || "",
-        keywords: response.data.keywords || [],
-        summary: response.data.summary || "",
-        userId: clerkUserId, // Send Clerk's User ID
-      });
+      // const responseSend = await axios.post("http://localhost:5000/save", {
+      //   subtopic: query,
+      //   title: response.data.title || "",
+      //   content: response.data.content || "",
+      //   examples: response.data.examples || "",
+      //   analogy: response.data.analogy || "",
+      //   codeExample: response.data.code_example || "",
+      //   keywords: response.data.keywords || [],
+      //   summary: response.data.summary || "",
+      //   userId: clerkUserId, // Send Clerk's User ID
+      // });
+      // Fetch YouTube links
+      fetchYoutubeLinks();
     } catch (err) {
       console.error("Request failed:", err.response?.data || err.message);
       setError("Failed to fetch data. Please try again.");
@@ -266,7 +284,7 @@ const StudyAssistant = () => {
 
     return processedContent;
   };
-
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
   return (
     <div
       className="w-full min-h-[100vh] flex flex-col mx-auto space-y-6 p-6 bg-gray-50"
@@ -430,6 +448,65 @@ const StudyAssistant = () => {
         </Card>
       )}
 
+      {/* YouTube Links Section */}
+      {youtubeLinks.length > 0 && (
+        <div className="mt-6 p-6 bg-gray-50 rounded-lg border-l-4 border-red-500 shadow-sm">
+          <h3 className="text-3xl font-bold text-gray-900 pb-2 border-b-2 border-gray-300">
+            🎥 Recommended YouTube Videos
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 text-blue-700 font-semibold">
+            {/* {youtubeLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-1 border border-gray-200"
+              >
+              </a>
+            ))} */}
+            {youtubeLinks.map((link, index) => {
+              const videoId = new URL(link).searchParams.get("v");
+              return (
+                <a
+                  key={index}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img
+                    src={`https://img.youtube.com/vi/${videoId}/0.jpg`}
+                    alt={`YouTube Video ${index + 1}`}
+                    className="rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-1 border border-gray-200"
+                  />
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="fixed bottom-90 right-8 flex gap-2">
+        <button
+          onClick={() => setShowWhiteboard(!showWhiteboard)}
+          className="bg-blue-800 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+        >
+          {showWhiteboard ? "Close" : "Whiteboard"}
+        </button>
+      </div>
+
+      {/* Whiteboard Section (Visible only when showWhiteboard is true) */}
+      {showWhiteboard && (
+        <div className="mt-6">
+          <iframe
+            src="https://excalidraw.com"
+            width="100%"
+            height="500px"
+            className="mt-3 border rounded-lg shadow-sm"
+          ></iframe>
+        </div>
+      )}
       {/* Floating Chat Button */}
       <button
         className="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary/90 transition-all"
