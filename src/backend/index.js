@@ -34,7 +34,7 @@ app.post("/generate-quiz", async (req, res) => {
   if (!topic || !userId) {
     return res.status(400).json({ error: "Topic and userId are required" });
   }
-
+//Generating Quiz
   const prompt = `Generate a quiz with the following structure:
   - Topic: ${topic}
   - Number of Questions: 5
