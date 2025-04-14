@@ -7,7 +7,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["frontend/prisma/src/*"]
+      "@/*": ["./src/*"]
     },
     "noImplicitAny": false,
     "noUnusedParameters": false,
