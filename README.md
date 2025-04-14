@@ -1,69 +1,163 @@
-# Welcome to your Lovable project
+# StudyZen
 
-## Project info
+An AI-powered study companion that helps students learn more effectively through personalized study plans, content explanations, flashcards, quizzes, and more.
 
-**URL**: https://lovable.dev/projects/17d3c341-1af6-4a62-aa82-9eb6f013d66f
+![StudyZen Dashboard](https://placeholder.com/studyzen-dashboard)
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+### 📝 Personalized Study Plans
+- Generate custom study schedules based on your topics and learning goals
+- Track your progress with intuitive dashboards and analytics
 
-**Use Lovable**
+### 🧠 Smart Content Explanations
+- Get detailed explanations of any study topic with examples and analogies
+- Customize content depth based on your understanding level
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/17d3c341-1af6-4a62-aa82-9eb6f013d66f) and start prompting.
+### 📊 Interactive Flowcharts & Visualizations
+- Auto-generate flowcharts for complex topics
+- Visual learning aids to understand relationships between concepts
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📚 Flashcards
+- Create and review customized flashcards
+- Spaced repetition system for better retention
 
-**Use your preferred IDE**
+### 📋 Smart Quizzes
+- AI-generated quizzes to test your knowledge
+- Adaptive difficulty based on your performance
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🎬 Resource Recommendations
+- Get relevant YouTube videos for any study topic
+- Find supplementary learning materials
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🔊 Text-to-Speech
+- Convert study material to audio for on-the-go learning
+- Adjust speech parameters for optimal listening experience
 
-Follow these steps:
+### ⏰ Study Timer
+- Track your study sessions
+- Built-in breaks following the Pomodoro technique
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🛠️ Tech Stack
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Frontend
+- **React**: UI framework
+- **TypeScript**: Type-safe JavaScript
+- **Vite**: Build tool
+- **Tailwind CSS**: Utility-first CSS framework
+- **Shadcn UI**: Component library
+- **Prisma**: Database ORM
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Backend
+- **FastAPI**: Python web framework
+- **Google Gemini AI**: Large language model integration
+- **LangChain**: Framework for LLM applications
+- **ChromaDB**: Vector database
+- **OpenCV**: Image processing for flowchart clarity detection
+- **Pandas**: Data manipulation
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🏁 Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- Python (v3.9+)
+- Git
+
+### Installation
+
+#### Frontend Setup
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+#### Backend Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Navigate to the backend directory
+cd backend
 
-**Use GitHub Codespaces**
+# Create a virtual environment
+python -m venv venv
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Activate the virtual environment
+# On Windows
+venv\Scripts\activate
+# On macOS/Linux
+source venv/bin/activate
 
-## What technologies are used for this project?
+# Install dependencies
+pip install -r requirements.txt
 
-This project is built with .
+# Start backend server
+uvicorn main:app --reload
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📝 API Endpoints
 
-## How can I deploy this project?
+### Study Content
+- `POST /explaination/`: Get detailed explanations for any study topic
+- `POST /generate_schedule/`: Create personalized study schedules
+- `POST /flowchart/`: Generate visual flowcharts for complex topics
+- `POST /videos/`: Find relevant educational videos
 
-Simply open [Lovable](https://lovable.dev/projects/17d3c341-1af6-4a62-aa82-9eb6f013d66f) and click on Share -> Publish.
+### User Progress
+- User authentication and progress tracking through Prisma database
 
-## I want to use a custom domain - is that possible?
+## 🖥️ Screenshots
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+![Study Plan](https://placeholder.com/study-plan)
+![Flashcards](https://placeholder.com/flashcards)
+![Quiz System](https://placeholder.com/quiz-system)
+
+## 🧪 Development
+
+### Running Tests
+```bash
+# Frontend tests
+cd frontend
+npm test
+
+# Backend tests
+cd backend
+pytest
+```
+
+### Environment Variables
+Create a `.env` file in both frontend and backend directories with the following:
+
+#### Backend `.env`
+```
+GEMINI_API_KEY=your_gemini_api_key
+YOUTUBE_API_KEY=your_youtube_api_key
+```
+
+#### Frontend `.env`
+```
+VITE_API_URL=http://localhost:8000
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👏 Acknowledgments
+
+- Google Gemini API for powering the AI features
+- The Langchain community for frameworks and tools
+- Shadcn UI for the beautiful component library
