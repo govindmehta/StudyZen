@@ -225,7 +225,7 @@ const Flashcards = () => {
                     <div className="h-1 bg-muted w-full rounded-full">
                       <div 
                         className="h-1 bg-primary rounded-full" 
-                        style={{ width: \`\${set.progress || 0}%\` }}
+                        style={{ width: `${set.progress || 0}%` }}
                       ></div>
                     </div>
                   </div>
