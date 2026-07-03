@@ -1,5 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,52 +13,17 @@ import {
   ChevronRight,
   Plus,
   Check,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 
-// Sample flashcard data
-const flashcardSets = [
-  {
-    id: 1,
-    title: "Computer Science Fundamentals",
-    cards: [
-      { id: 1, question: "What is a binary search?", answer: "A search algorithm that finds the position of a target value within a sorted array by repeatedly dividing the search interval in half." },
-      { id: 2, question: "What is Object-Oriented Programming?", answer: "A programming paradigm based on the concept of 'objects', which can contain data and code: data in the form of fields, and code in the form of procedures." },
-      { id: 3, question: "What is a data structure?", answer: "A data organization, management, and storage format that enables efficient access and modification." },
-    ],
-    lastStudied: "2 days ago",
-    progress: 65,
-  },
-  {
-    id: 2,
-    title: "Calculus Formulas",
-    cards: [
-      { id: 1, question: "What is the derivative of sin(x)?", answer: "cos(x)" },
-      { id: 2, question: "What is the integral of 1/x?", answer: "ln|x| + C" },
-      { id: 3, question: "State the chain rule", answer: "If y = f(u) and u = g(x), then dy/dx = (dy/du) * (du/dx)" },
-    ],
-    lastStudied: "1 week ago",
-    progress: 40,
-  },
-  {
-    id: 3,
-    title: "Physics Concepts",
-    cards: [
-      { id: 1, question: "What is Newton's First Law?", answer: "An object at rest stays at rest, and an object in motion stays in motion with the same speed and direction unless acted upon by an external force." },
-      { id: 2, question: "What is the formula for kinetic energy?", answer: "KE = (1/2)mv²" },
-      { id: 3, question: "What is the speed of light in vacuum?", answer: "299,792,458 meters per second (approximately 3 × 10⁸ m/s)" },
-    ],
-    lastStudied: "3 days ago",
-    progress: 75,
-  },
-];
-
-const FlashcardStudy = () => {
+const FlashcardStudy = ({ currentSet, onBack }) => {
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   
-  const currentSet = flashcardSets[currentSetIndex];
+  if (!currentSet || !currentSet.cards || currentSet.cards.length === 0) return null;
+  
   const currentCard = currentSet.cards[currentCardIndex];
   
   const nextCard = () => {
@@ -64,9 +31,6 @@ const FlashcardStudy = () => {
     setTimeout(() => {
       if (currentCardIndex < currentSet.cards.length - 1) {
         setCurrentCardIndex(currentCardIndex + 1);
-      } else if (currentSetIndex < flashcardSets.length - 1) {
-        setCurrentSetIndex(currentSetIndex + 1);
-        setCurrentCardIndex(0);
       }
     }, 200);
   };
@@ -76,16 +40,17 @@ const FlashcardStudy = () => {
     setTimeout(() => {
       if (currentCardIndex > 0) {
         setCurrentCardIndex(currentCardIndex - 1);
-      } else if (currentSetIndex > 0) {
-        setCurrentSetIndex(currentSetIndex - 1);
-        setCurrentCardIndex(flashcardSets[currentSetIndex - 1].cards.length - 1);
       }
     }, 200);
   };
   
   return (
     <div className="flex flex-col items-center justify-center h-[60vh]">
-      <div className="text-xl font-medium mb-6">{currentSet.title}</div>
+      <div className="flex justify-between w-full max-w-2xl mb-6 items-center">
+        <Button variant="ghost" onClick={onBack}>Back to Sets</Button>
+        <div className="text-xl font-medium">{currentSet.title}</div>
+        <div className="w-20"></div> {/* Spacer for alignment */}
+      </div>
       
       <div 
         className="perspective w-full max-w-2xl h-64 mb-6 cursor-pointer"
@@ -113,7 +78,7 @@ const FlashcardStudy = () => {
       </div>
       
       <div className="flex gap-4">
-        <Button variant="outline" size="icon" onClick={prevCard} disabled={currentSetIndex === 0 && currentCardIndex === 0}>
+        <Button variant="outline" size="icon" onClick={prevCard} disabled={currentCardIndex === 0}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
@@ -140,7 +105,7 @@ const FlashcardStudy = () => {
           </Button>
         </div>
         
-        <Button variant="outline" size="icon" onClick={nextCard} disabled={currentSetIndex === flashcardSets.length - 1 && currentCardIndex === currentSet.cards.length - 1}>
+        <Button variant="outline" size="icon" onClick={nextCard} disabled={currentCardIndex === currentSet.cards.length - 1}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
@@ -149,6 +114,55 @@ const FlashcardStudy = () => {
 };
 
 const Flashcards = () => {
+  const { user } = useUser();
+  const [activeTab, setActiveTab] = useState("all");
+  const [flashcardSets, setFlashcardSets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [topic, setTopic] = useState("");
+  const [activeSet, setActiveSet] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchFlashcards();
+    }
+  }, [user]);
+
+  const fetchFlashcards = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:5000/flashcards?userId=${user.id}`);
+      setFlashcardSets(res.data);
+    } catch (error) {
+      console.error("Failed to fetch flashcards", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateFlashcards = async () => {
+    if (!topic.trim()) return;
+    try {
+      setGenerating(true);
+      await axios.post("http://localhost:5000/generate-flashcards", {
+        topic,
+        userId: user.id
+      });
+      setTopic("");
+      fetchFlashcards();
+      setActiveTab("all");
+    } catch (error) {
+      console.error("Failed to generate flashcards", error);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleStudy = (set) => {
+    setActiveSet(set);
+    setActiveTab("study");
+  };
+
   return (
     <div className="space-y-6 animate-slide-in">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -161,86 +175,70 @@ const Flashcards = () => {
         
         <div className="flex gap-2">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              type="search"
-              placeholder="Search flashcards..."
-              className="pl-8 w-[200px] md:w-[260px]"
+              type="text"
+              placeholder="Enter a topic..."
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="w-[200px] md:w-[260px]"
             />
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> Create Set
+          <Button onClick={generateFlashcards} disabled={generating || !topic.trim()}>
+            {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+            Create Set
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="study">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
-          <TabsTrigger value="study">Study</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="all">All Sets</TabsTrigger>
-          <TabsTrigger value="favorites">Favorites</TabsTrigger>
+          <TabsTrigger value="study" disabled={!activeSet}>Study</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="study" className="mt-6">
-          <FlashcardStudy />
-        </TabsContent>
+        {activeTab === "study" && activeSet && (
+          <TabsContent value="study" className="mt-6">
+            <FlashcardStudy currentSet={activeSet} onBack={() => {
+              setActiveTab("all");
+              setActiveSet(null);
+            }} />
+          </TabsContent>
+        )}
         
         <TabsContent value="all" className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {flashcardSets.map((set) => (
-              <Card key={set.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <div className="bg-primary/5 p-4 border-b">
-                  <div className="flex justify-between items-center mb-2">
-                    <div className="flex items-center">
-                      <BookText className="h-4 w-4 mr-2 text-primary" />
-                      <span className="font-medium">{set.title}</span>
+          {loading ? (
+            <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>
+          ) : flashcardSets.length === 0 ? (
+            <div className="text-center p-8 text-muted-foreground">No flashcard sets available. Generate one to start!</div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {flashcardSets.map((set) => (
+                <Card key={set.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="bg-primary/5 p-4 border-b">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center">
+                        <BookText className="h-4 w-4 mr-2 text-primary" />
+                        <span className="font-medium truncate max-w-[150px]" title={set.title}>{set.title}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{set.cards?.length || 0} cards</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">{set.cards.length} cards</span>
+                    <div className="h-1 bg-muted w-full rounded-full">
+                      <div 
+                        className="h-1 bg-primary rounded-full" 
+                        style={{ width: \`\${set.progress || 0}%\` }}
+                      ></div>
+                    </div>
                   </div>
-                  <div className="h-1 bg-muted w-full rounded-full">
-                    <div 
-                      className="h-1 bg-primary rounded-full" 
-                      style={{ width: `${set.progress}%` }}
-                    ></div>
+                  <div className="p-4">
+                    <div className="text-sm text-muted-foreground mb-4">
+                      Last studied: {new Date(set.lastStudied).toLocaleDateString()}
+                    </div>
+                    <Button className="w-full" onClick={() => handleStudy(set)}>Study Now</Button>
                   </div>
-                </div>
-                <div className="p-4">
-                  <div className="text-sm text-muted-foreground mb-4">
-                    Last studied: {set.lastStudied}
-                  </div>
-                  <Button className="w-full">Study Now</Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="favorites" className="mt-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="overflow-hidden hover:shadow-md transition-shadow">
-              <div className="bg-primary/5 p-4 border-b">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center">
-                    <BookText className="h-4 w-4 mr-2 text-primary" />
-                    <span className="font-medium">Computer Science Fundamentals</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">3 cards</span>
-                </div>
-                <div className="h-1 bg-muted w-full rounded-full">
-                  <div 
-                    className="h-1 bg-primary rounded-full" 
-                    style={{ width: '65%' }}
-                  ></div>
-                </div>
-              </div>
-              <div className="p-4">
-                <div className="text-sm text-muted-foreground mb-4">
-                  Last studied: 2 days ago
-                </div>
-                <Button className="w-full">Study Now</Button>
-              </div>
-            </Card>
-          </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

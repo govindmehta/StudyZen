@@ -175,17 +175,24 @@ const StudyAssistant = () => {
       console.log("Response:", response.data);
       setData(response.data);
 
-      // const responseSend = await axios.post("http://localhost:5000/save", {
-      //   subtopic: query,
-      //   title: response.data.title || "",
-      //   content: response.data.content || "",
-      //   examples: response.data.examples || "",
-      //   analogy: response.data.analogy || "",
-      //   codeExample: response.data.code_example || "",
-      //   keywords: response.data.keywords || [],
-      //   summary: response.data.summary || "",
-      //   userId: clerkUserId, // Send Clerk's User ID
-      // });
+      if (clerkUserId) {
+        try {
+          await axios.post("http://localhost:5000/save", {
+            subtopic: query,
+            title: response.data.title || query,
+            content: response.data.content || "",
+            examples: response.data.examples || "",
+            analogy: response.data.analogy || "",
+            codeExample: response.data.code_example || "",
+            keywords: response.data.keywords || [],
+            summary: response.data.summary || "",
+            userId: clerkUserId,
+          });
+        } catch (saveErr) {
+          console.error("Failed to save to database:", saveErr);
+        }
+      }
+
       // Fetch YouTube links
       fetchYoutubeLinks();
     } catch (err) {

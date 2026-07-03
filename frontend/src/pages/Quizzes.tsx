@@ -1,5 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,99 +18,15 @@ import {
   CheckCircle2,
   AlertTriangle,
   ChevronRight,
-  ChevronLeft 
+  ChevronLeft,
+  Loader2
 } from 'lucide-react';
 
-// Sample quiz data
-const quizzes = [
-  {
-    id: 1,
-    title: "Computer Science Basics",
-    description: "Test your knowledge of fundamental computer science concepts",
-    questions: 15,
-    time: 20,
-    completed: true,
-    score: 85,
-    thumbnail: "bg-gradient-to-br from-blue-500 to-purple-600",
-  },
-  {
-    id: 2,
-    title: "Calculus II Midterm Review",
-    description: "Practice problems for the upcoming midterm exam",
-    questions: 20,
-    time: 30,
-    completed: false,
-    progress: 40,
-    thumbnail: "bg-gradient-to-br from-green-500 to-emerald-600",
-  },
-  {
-    id: 3,
-    title: "Physics: Mechanics",
-    description: "Review of key concepts in classical mechanics",
-    questions: 12,
-    time: 15,
-    completed: false,
-    progress: 0,
-    thumbnail: "bg-gradient-to-br from-orange-500 to-red-600",
-  },
-  {
-    id: 4,
-    title: "Data Structures",
-    description: "Quiz on arrays, linked lists, trees, and graphs",
-    questions: 18,
-    time: 25,
-    completed: true,
-    score: 92,
-    thumbnail: "bg-gradient-to-br from-purple-500 to-pink-600",
-  },
-];
-
-// Sample quiz questions
-const sampleQuiz = {
-  title: "Computer Science Basics",
-  questions: [
-    {
-      id: 1,
-      question: "What does CPU stand for?",
-      options: [
-        "Central Processing Unit",
-        "Computer Personal Unit",
-        "Central Process Utility",
-        "Core Processing Unit"
-      ],
-      correctAnswer: 0
-    },
-    {
-      id: 2,
-      question: "Which of the following is NOT a programming language?",
-      options: [
-        "Java",
-        "Python",
-        "HTML",
-        "HTTP"
-      ],
-      correctAnswer: 3
-    },
-    {
-      id: 3,
-      question: "What is the time complexity of a binary search algorithm?",
-      options: [
-        "O(n)",
-        "O(n²)",
-        "O(log n)",
-        "O(n log n)"
-      ],
-      correctAnswer: 2
-    }
-  ]
-};
-
-const QuizTaking = () => {
+const QuizTaking = ({ quiz, onBack }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showResults, setShowResults] = useState(false);
   
-  const quiz = sampleQuiz;
   const question = quiz.questions[currentQuestion];
   
   const handleNext = () => {
@@ -134,7 +52,9 @@ const QuizTaking = () => {
   const calculateScore = () => {
     let correct = 0;
     quiz.questions.forEach((q, index) => {
-      if (selectedAnswers[index] === q.correctAnswer) {
+      // API generated correctAnswer is a string like "Option A" or the text of the option. 
+      // We should check if the option text matches the correctAnswer.
+      if (q.options[selectedAnswers[index]] === q.correctAnswer) {
         correct++;
       }
     });
@@ -165,7 +85,7 @@ const QuizTaking = () => {
           }}>
             Try Again
           </Button>
-          <Button>Back to Quizzes</Button>
+          <Button onClick={onBack}>Back to Quizzes</Button>
         </div>
       </div>
     );
@@ -183,7 +103,7 @@ const QuizTaking = () => {
         
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">15:42 remaining</span>
+          <span className="text-sm font-medium">{quiz.time} min remaining</span>
         </div>
       </div>
       
@@ -229,7 +149,53 @@ const QuizTaking = () => {
 };
 
 const Quizzes = () => {
+  const { user } = useUser();
   const [activeTab, setActiveTab] = useState("available");
+  const [quizzes, setQuizzes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [topic, setTopic] = useState("");
+  const [activeQuiz, setActiveQuiz] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchQuizzes();
+    }
+  }, [user]);
+
+  const fetchQuizzes = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get(`http://localhost:5000/quizzes?userId=${user.id}`);
+      setQuizzes(res.data);
+    } catch (error) {
+      console.error("Failed to fetch quizzes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateQuiz = async () => {
+    if (!topic.trim()) return;
+    try {
+      setGenerating(true);
+      await axios.post("http://localhost:5000/generate-quiz", {
+        topic,
+        userId: user.id
+      });
+      setTopic("");
+      fetchQuizzes();
+    } catch (error) {
+      console.error("Failed to generate quiz", error);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleStartQuiz = (quiz) => {
+    setActiveQuiz(quiz);
+    setActiveTab("quiz");
+  };
   
   return (
     <div className="space-y-6 animate-slide-in">
@@ -243,33 +209,43 @@ const Quizzes = () => {
         
         <div className="flex gap-2">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              type="search"
-              placeholder="Search quizzes..."
-              className="pl-8 w-[200px] md:w-[260px]"
+              type="text"
+              placeholder="Enter a topic..."
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="w-[200px] md:w-[260px]"
             />
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" /> Create Quiz
+          <Button onClick={generateQuiz} disabled={generating || !topic.trim()}>
+            {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+            Generate Quiz
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="available" onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="available">Available</TabsTrigger>
           <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
         
-        {activeTab === "quiz" ? (
+        {activeTab === "quiz" && activeQuiz ? (
           <TabsContent value="quiz" className="mt-6">
-            <QuizTaking />
+            <QuizTaking quiz={activeQuiz} onBack={() => {
+              setActiveTab("available");
+              setActiveQuiz(null);
+            }} />
           </TabsContent>
         ) : (
           <>
             <TabsContent value="available" className="mt-6">
+              {loading ? (
+                <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>
+              ) : quizzes.length === 0 ? (
+                <div className="text-center p-8 text-muted-foreground">No quizzes available. Generate one to start!</div>
+              ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {quizzes
                   .filter(quiz => !quiz.completed && (!quiz.progress || quiz.progress === 0))
@@ -287,7 +263,7 @@ const Quizzes = () => {
                         <div className="flex justify-between text-sm mb-4">
                           <div className="flex items-center">
                             <LayoutDashboard className="h-4 w-4 mr-1" />
-                            <span>{quiz.questions} questions</span>
+                            <span>{quiz.questions?.length || 0} questions</span>
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 mr-1" />
@@ -296,12 +272,13 @@ const Quizzes = () => {
                         </div>
                       </CardContent>
                       <CardFooter>
-                        <Button className="w-full" onClick={() => setActiveTab("quiz")}>Start Quiz</Button>
+                        <Button className="w-full" onClick={() => handleStartQuiz(quiz)}>Start Quiz</Button>
                       </CardFooter>
                     </Card>
                   ))
                 }
               </div>
+              )}
             </TabsContent>
             
             <TabsContent value="ongoing" className="mt-6">

@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
-  id         String     @id @default(cuid())
+  id         String     @id @default(uuid())
   userId     String     @unique  // Clerk User ID
   username   String     @unique
   flashcards FlashCard[]
@@ -17,7 +17,7 @@ model User {
 }
 
 model FlashCard {
-  id          String  @id @default(cuid())
+  id          String  @id @default(uuid())
   title       String
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
@@ -27,7 +27,7 @@ model FlashCard {
 }
 
 model Card {
-  id         String    @id @default(cuid())
+  id         String    @id @default(uuid())
   flashcard  FlashCard @relation(fields: [flashCardId], references: [id], onDelete: Cascade)
   flashCardId String
   question   String
@@ -42,7 +42,7 @@ model StudyResponse {
   examples   String?
   analogy    String?
   codeExample String?
-  keywords   String[]
+  keywords   String   @default("[]")
   summary    String?
   createdAt  DateTime @default(now())
   user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -51,7 +51,7 @@ model StudyResponse {
 
 
 model Quiz {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   title        String
   description  String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -66,11 +66,11 @@ model Quiz {
 }
 
 model QuizQuestion {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   quizId        String
   question      String
-  options       String[] // Multiple choice options
+  options       String   // JSON stringified multiple choice options
   correctAnswer String
   explanation   String?  // Explanation for the correct answer
   questionType  String   // e.g., "MCQ", "True/False", "Short Answer"

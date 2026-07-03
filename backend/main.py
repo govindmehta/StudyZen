@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field,model_validator
 from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException
 import os
-from langchain.schema.runnable import RunnableParallel
+from langchain_core.runnables import RunnableParallel
 from time_table import *
 from quiz import *
 from content import *
@@ -34,7 +34,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-model= ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+model= ChatGoogleGenerativeAI(model="gemini-2.0-flash", api_key=API_KEY)
 # model= ChatGroq(model="llama-3.3-70b-versatile")
 
 schedule_chain= schedule_prompt | model
