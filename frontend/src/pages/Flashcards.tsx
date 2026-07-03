@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { 
   BookText, 
-  Search, 
   ChevronLeft, 
   ChevronRight,
   Plus,
@@ -18,7 +17,6 @@ import {
 } from 'lucide-react';
 
 const FlashcardStudy = ({ currentSet, onBack }) => {
-  const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   

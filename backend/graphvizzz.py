@@ -1,7 +1,10 @@
 import google.generativeai as genai
 import graphviz
+import os
 
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+genai.configure(api_key=GEMINI_API_KEY)
 
 def get_steps_from_gemini(task):
     model = genai.GenerativeModel("gemini-pro")

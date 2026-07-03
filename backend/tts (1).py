@@ -2,12 +2,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import requests
+import os
 
 # Initialize FastAPI app
 app = FastAPI()
 
 # 🔑 Replace with your YouTube API Key
-YOUTUBE_API_KEY = "YOUR_YOUTUBE_API_KEY"
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 
 # Request model
 class TopicRequest(BaseModel):

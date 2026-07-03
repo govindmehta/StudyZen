@@ -20,6 +20,8 @@ import Loader from "@/components/Loader";
 
 import { useUser } from "@clerk/clerk-react";
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
 // Markdown components configuration
 const markdownComponents = {
   code({ node, inline, className, children, ...props }) {
@@ -208,7 +210,7 @@ const StudyAssistant = () => {
     try {
       // Replace with your actual Gemini API endpoint and key
       const response = await axios.post(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCXhLlkUjr95LY4t-82QhB8fszgIUzhN-Q",
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
         {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {

@@ -10,8 +10,8 @@ from PIL import Image
 from io import BytesIO
 
 # 🔑 Google API Key & CSE ID
-API_KEY = "AIzaSyBucdfY9_2iXChsS5zr405NUdtMvNc9RtU"
-CX = "821bd1225523b4a80"
+API_KEY = os.getenv("GEMINI_API_KEY")
+CX = os.getenv("CX")
 
 # 🔎 Define the search query
 search_query = str

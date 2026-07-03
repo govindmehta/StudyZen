@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 
 dotenv.config();
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const app = express();
 const prisma = new PrismaClient();
 
@@ -78,7 +79,7 @@ app.post("/generate-quiz", async (req, res) => {
 
   try {
     const response = await axios.post(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCXhLlkUjr95LY4t-82QhB8fszgIUzhN-Q",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [
           {
@@ -209,7 +210,7 @@ app.post("/generate-flashcards", async (req, res) => {
 
   try {
     const response = await axios.post(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCXhLlkUjr95LY4t-82QhB8fszgIUzhN-Q",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         contents: [
           {

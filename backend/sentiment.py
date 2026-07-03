@@ -1,9 +1,12 @@
 import google.generativeai as genai
+import os
 
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+genai.configure(api_key=GEMINI_API_KEY)
 
 def classify_text(text):
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
     prompt = f"""Classify the following text into one of these categories:
     1. Computer Science
     2. Mathematics

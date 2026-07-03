@@ -21,8 +21,9 @@ from fastapi.middleware.cors import CORSMiddleware
 # Load environment variables
 load_dotenv()
 
-API_KEY = "AIzaSyBucdfY9_2iXChsS5zr405NUdtMvNc9RtU"
-CX = "821bd1225523b4a80"
+API_KEY = os.getenv("GEMINI_API_KEY")
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+CX = os.getenv("CX")
 
 # Initialize FastAPI
 app = FastAPI(title="Study Buddy API")
@@ -34,7 +35,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 
-model= ChatGoogleGenerativeAI(model="gemini-2.0-flash", api_key=API_KEY)
+model= ChatGoogleGenerativeAI(model="gemini-3.0-flash", api_key=API_KEY)
 # model= ChatGroq(model="llama-3.3-70b-versatile")
 
 schedule_chain= schedule_prompt | model
@@ -101,7 +102,6 @@ async def search_flowchart(subtopic: str):
     
     return {"error": "No clear images found."}
 
-YOUTUBE_API_KEY = "AIzaSyAcCgwuy8HNoM51Tlf6Z4muoRVj9OW_7qE"
 
 class TopicRequest(BaseModel):
     topic: str
