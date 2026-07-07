@@ -34,3 +34,24 @@ export function buildFlashcardFallback(topic) {
     })),
   };
 }
+
+export function buildScheduleFallback(topic) {
+  return {
+    title: `${topic} Study Plan`,
+    subtopics: [
+      `Introduction to ${topic}`,
+      `Core concepts of ${topic}`,
+      `Hands-on practice with ${topic}`,
+      `Common mistakes in ${topic}`,
+      `Revision and recap of ${topic}`,
+    ],
+    time_allocation: ["30 minutes", "45 minutes", "45 minutes", "30 minutes", "30 minutes"],
+    resources: [
+      `Read a beginner guide on ${topic}.`,
+      `Watch a short tutorial covering the core ideas of ${topic}.`,
+      `Practice a small exercise or example for ${topic}.`,
+      `Review the most common errors and pitfalls in ${topic}.`,
+      `Summarize the key points and test yourself on ${topic}.`,
+    ],
+  };
+}

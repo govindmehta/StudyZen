@@ -1,8 +1,16 @@
 import { randomUUID } from "crypto";
-import { buildFlashcardFallback, buildExplanationFallback, buildQuizFallback } from "../services/fallbacks.service.js";
+import { buildFlashcardFallback, buildExplanationFallback, buildQuizFallback, buildScheduleFallback } from "../services/fallbacks.service.js";
 import { generateStudyJson, generateStudyText } from "../services/gemini.service.js";
 import { readStore, writeStore } from "../services/store.service.js";
 import { normalizeText, toArray } from "../utils/text.js";
+
+function toTextArray(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeText(String(item))).filter(Boolean);
+  }
+
+  return toArray(value);
+}
 
 export async function getExplanation(req, res, next) {
   try {
@@ -108,6 +116,7 @@ Return only valid JSON with this structure:
 {
   "title": "Quiz title",
   "description": "Short description",
+  "time": 12,
   "questions": [
     {
       "question": "Question text?",
@@ -120,7 +129,8 @@ Return only valid JSON with this structure:
   ]
 }
 
-Create 5 multiple choice questions and keep the output valid JSON.`;
+Create 5 multiple choice questions and keep the output valid JSON.
+Set time to an appropriate number of minutes for the quiz, usually between 5 and 20.`;
 
     const fallback = buildQuizFallback(topic);
     const data = await generateStudyJson(prompt, fallback);
@@ -132,7 +142,7 @@ Create 5 multiple choice questions and keep the output valid JSON.`;
       title: normalizeText(data.title) || fallback.title,
       description: normalizeText(data.description) || fallback.description,
       userId,
-      time: 20,
+      time: Number.parseInt(data.time, 10) || fallback.time || 15,
       completed: false,
       score: null,
       progress: 0,
@@ -160,6 +170,49 @@ Create 5 multiple choice questions and keep the output valid JSON.`;
     await writeStore(store);
 
     res.json(createdQuiz);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function generateSchedule(req, res, next) {
+  try {
+    const topic = normalizeText(req.body?.topic);
+
+    if (!topic) {
+      return res.status(400).json({ error: "topic is required" });
+    }
+
+    const prompt = `Generate a short study timetable for ${topic}.
+Return only valid JSON with this structure:
+{
+  "title": "Study plan title",
+  "subtopics": ["topic 1", "topic 2", "topic 3"],
+  "time_allocation": ["30 minutes", "45 minutes", "1 hour"],
+  "resources": ["resource 1", "resource 2", "resource 3"]
+}
+
+Keep the plan practical, concise, and aligned across all arrays.`;
+
+    const fallback = buildScheduleFallback(topic);
+    const data = await generateStudyJson(prompt, fallback);
+
+    const subtopics = toTextArray(data.subtopics);
+    const timeAllocation = toTextArray(data.time_allocation || data.timeAllocation);
+    const resources = toTextArray(data.resources);
+
+    const length = Math.max(subtopics.length, timeAllocation.length, resources.length, fallback.subtopics.length);
+
+    const resolvedSubtopics = Array.from({ length }, (_, index) => subtopics[index] || fallback.subtopics[index] || `${topic} topic ${index + 1}`);
+    const resolvedTimeAllocation = Array.from({ length }, (_, index) => timeAllocation[index] || fallback.time_allocation[index] || "30 minutes");
+    const resolvedResources = Array.from({ length }, (_, index) => resources[index] || fallback.resources[index] || `Review ${topic}.`);
+
+    res.json({
+      title: normalizeText(data.title) || fallback.title,
+      subtopics: resolvedSubtopics,
+      time_allocation: resolvedTimeAllocation,
+      resources: resolvedResources,
+    });
   } catch (error) {
     next(error);
   }
@@ -302,8 +355,12 @@ export async function chatStudyAssistant(req, res, next) {
       return res.status(400).json({ error: "message is required" });
     }
 
-    const prompt = `You are a helpful study assistant. The user is asking: "${message}"
-Provide a helpful, educational response focused on learning. Keep your answer concise but informative.`;
+    const prompt = `You are a helpful general-purpose assistant.
+  Answer the user's question clearly and naturally:
+
+  ${message}
+
+  Provide the best direct answer you can. If the question is about a topic, explain it simply and completely. Do not limit yourself to programming unless the question asks for it.`;
 
     const response = await generateStudyText(
       prompt,

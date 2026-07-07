@@ -1,0 +1,169 @@
+{
+  "responses": [
+    {
+      "id": "e23d47f1-767f-416c-a49d-d128e0171736",
+      "subtopic": "java programming language",
+      "title": "Java Variables",
+      "content": "In Java, a **variable** is a container that holds data values. Think of it as a named storage location in your computer's memory. Before you can use a variable, you must declare it, specifying its **data type** (what kind of data it will hold, e.g., numbers, text, true/false) and giving it a name.\n\n**Declaration:**\n`dataType variableName;`\n\n**Initialization:** (assigning an initial value)\n`dataType variableName = value;`\n\n**Assignment:** (changing the value of an existing variable)\n`variableName = newValue;`\n\nThere are various data types in Java, categorized into primitive types (like `int`, `double`, `boolean`, `char`) and reference types (like `String`, arrays, objects).",
+      "examples": "- `int score = 100;` (declares an integer variable named `score` and initializes it to 100)\n- `String greeting = \"Hello, Java!\";` (declares a String variable)\n- `boolean isActive = true;` (declares a boolean variable)\n- `double price;` (declares a double variable without initializing it)\n- `price = 29.99;` (assigns a value to the `price` variable)",
+      "analogy": "A variable is like a labeled box. The label is the variable's name, and the type of box (e.g., a small box for a single item, a bigger box for multiple items) determines what kind of data it can hold. What's inside the box is its current value. You can put different things in the box, but generally, they should fit the box's purpose.",
+      "codeExample": "java\npublic class VariableExample {\n    public static void main(String[] args) {\n        // Declare and initialize an integer variable\n        int age = 30;\n        System.out.println(\"My age is: \" + age);\n\n        // Declare a String variable and then assign a value\n        String name;\n        name = \"Alice\";\n        System.out.println(\"My name is: \" + name);\n\n        // Change the value of an existing variable\n        age = 31;\n        System.out.println(\"Next year, my age will be: \" + age);\n\n        // Declare and initialize a double variable\n        double temperature = 25.5;\n        System.out.println(\"Current temperature: \" + temperature + \"°C\");\n\n        // Declare a boolean variable\n        boolean isLoggedIn = false;\n        System.out.println(\"User is logged in: \" + isLoggedIn);\n    }\n}",
+      "keywords": "[\"variable\",\"data type\",\"declaration\",\"initialization\",\"assignment\",\"primitive\",\"reference\"]",
+      "summary": "Variables are named memory locations in Java that store data. They must be declared with a specific data type and can be initialized and reassigned values throughout a program's execution.",
+      "userId": "user_2uzLZ3pRR1Lsku8gMixX9dmxpad",
+      "updatedAt": "2026-07-07T16:56:47.636Z",
+      "createdAt": "2026-07-07T16:56:47.636Z"
+    },
+    {
+      "id": "155e88b3-ff19-4922-9a3d-c07732f4c66e",
+      "subtopic": "h",
+      "title": "HTML Elements",
+      "content": "An HTML element is the fundamental building block of an HTML page. It typically consists of an **opening tag**, a **closing tag**, and the **content** in between. For example, `<p>This is content</p>`. \n\nTags define the type of content (e.g., paragraph, heading, link) and how browsers should render it. Elements can also have **attributes**, which provide additional information about the element and are placed within the opening tag (e.g., `<a href=\"url\">`). Some elements are \"void\" or \"empty\" and do not have a closing tag or content (e.g., `<img src=\"image.jpg\">`, `<br>`).",
+      "examples": "- `<h1>Page Title</h1>` (Heading element)\n- `<p>A paragraph of text.</p>` (Paragraph element)\n- `<a href=\"https://www.example.com\">Link</a>` (Anchor element with `href` attribute)\n- `<img src=\"pic.png\" alt=\"A picture\">` (Image element with `src` and `alt` attributes)\n- `<div>Grouped content</div>` (Division element)",
+      "analogy": "Imagine HTML elements as different types of LEGO bricks. Each brick (element) has a specific shape and purpose (e.g., a flat base, a tall wall, a window). You combine these bricks to build a complete structure (your webpage). Some bricks can have stickers or unique colors (attributes) to give them special characteristics.",
+      "codeExample": "html\n<!DOCTYPE html>\n<html>\n<head>\n    <title>My Web Page</title>\n</head>\n<body>\n    <h1>Welcome to my site!</h1>\n    <p>This is a paragraph of text within the body.</p>\n    <a href=\"https://developer.mozilla.org/en-US/docs/Web/HTML\">Learn more about HTML</a>\n    <img src=\"placeholder.png\" alt=\"A placeholder image\">\n</body>\n</html>",
+      "keywords": "[\"HTML\",\"Element\",\"Tag\",\"Attribute\",\"Web Development\",\"Markup Language\",\"Structure\"]",
+      "summary": "HTML elements are the core components of web pages, defining content structure and meaning using opening tags, closing tags, content, and optional attributes.",
+      "userId": "user_2uzLZ3pRR1Lsku8gMixX9dmxpad",
+      "updatedAt": "2026-07-07T16:56:18.902Z",
+      "createdAt": "2026-07-07T16:56:18.902Z"
+    },
+    {
+      "id": "1aeb0351-ec2f-4cf5-bfa3-fc7632f9bb95",
+      "subtopic": "hi",
+      "title": "The Emphatic Particle 'hi' (ही)",
+      "content": "'hi' (ही) is an emphatic particle in Hindi. It is always placed *after* the word it emphasizes, adding stress, exclusivity, or certainty to that specific word. It does not stand alone but modifies the preceding word.\n\nCommon translations depend on context but often include:\n*   \"only\" / \"just\"\n*   \"indeed\" / \"certainly\"\n*   \"even\" / \"exactly\"\n*   It can also simply add emphasis without a direct English equivalent, similar to bolding a word in writing.",
+      "examples": "*   **मैं ही करूँगा।** (Main **hi** karoongaa.)\n    *   I **myself** will do it. / **Only I** will do it. (Emphasis on 'I')\n*   **मुझे एक ही किताब चाहिए।** (Mujhe ek **hi** kitaab chaahiye.)\n    *   I need **only one** book. (Emphasis on 'one', indicating exclusivity)\n*   **तुम अभी ही आओ।** (Tum abhi **hi** aao.)\n    *   You come **right now**. / You come **just now**. (Emphasis on 'now', indicating immediacy)\n*   **वह घर पर ही है।** (Vah ghar par **hi** hai.)\n    *   He is **indeed** at home. / He is **only** at home. (Emphasis on 'at home', indicating certainty or exclusivity)",
+      "analogy": "Imagine 'hi' (ही) as a linguistic spotlight. You place it *right after* the word you want to highlight, making that specific word stand out and drawing attention to its importance, exclusivity, or certainty within the sentence.",
+      "codeExample": "",
+      "keywords": "[\"hi\",\"ही\",\"emphasis\",\"particle\",\"Hindi grammar\",\"only\",\"just\"]",
+      "summary": "'hi' (ही) is an emphatic Hindi particle placed after a word to add stress, exclusivity, or certainty, often translating to 'only,' 'just,' or 'indeed,' or simply providing emphasis.",
+      "userId": "user_2uzLZ3pRR1Lsku8gMixX9dmxpad",
+      "updatedAt": "2026-07-07T16:56:30.963Z",
+      "createdAt": "2026-07-07T16:39:02.774Z"
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "fdb78bad-756d-487d-952e-9545ea43bbb4",
+      "title": "Python Basics Quiz",
+      "description": "Test your fundamental knowledge of the Python programming language with these multiple-choice questions.",
+      "userId": "user_2uzLZ3pRR1Lsku8gMixX9dmxpad",
+      "time": 20,
+      "completed": false,
+      "score": null,
+      "progress": 0,
+      "thumbnail": "bg-gradient-to-br from-blue-500 to-purple-600",
+      "createdAt": "2026-07-07T16:39:38.772Z",
+      "questions": [
+        {
+          "id": "f96a627a-5305-4a1d-ab78-28690983aabf",
+          "question": "Which built-in function is used to print output to the console in Python?",
+          "options": [
+            "console.log()",
+            "print()",
+            "display()",
+            "output()"
+          ],
+          "correctAnswer": "print()",
+          "explanation": "The `print()` function is the standard and most commonly used built-in function for displaying output to the console in Python.",
+          "questionType": "MCQ",
+          "difficulty": "Easy"
+        },
+        {
+          "id": "67a66ef8-3c31-4063-b733-bc6e078c0748",
+          "question": "Which of the following is an immutable data type in Python?",
+          "options": [
+            "list",
+            "dict",
+            "set",
+            "tuple"
+          ],
+          "correctAnswer": "tuple",
+          "explanation": "Tuples are ordered, immutable sequences, meaning their elements cannot be changed after creation. Lists, dictionaries, and sets are mutable.",
+          "questionType": "MCQ",
+          "difficulty": "Medium"
+        },
+        {
+          "id": "e7d0898d-ecae-43f7-b66c-1c6494d73c0e",
+          "question": "What keyword is used to start an `if` statement in Python?",
+          "options": [
+            "if",
+            "when",
+            "check",
+            "condition"
+          ],
+          "correctAnswer": "if",
+          "explanation": "The `if` keyword is used to begin a conditional statement, followed by a condition that evaluates to True or False.",
+          "questionType": "MCQ",
+          "difficulty": "Easy"
+        },
+        {
+          "id": "1fe93fa6-5da2-45df-a1e8-754256cc34ab",
+          "question": "How do you correctly define a function in Python?",
+          "options": [
+            "function my_func():",
+            "def my_func():",
+            "create function my_func():",
+            "func my_func():"
+          ],
+          "correctAnswer": "def my_func():",
+          "explanation": "Functions in Python are defined using the `def` keyword, followed by the function name, parentheses for parameters, and a colon.",
+          "questionType": "MCQ",
+          "difficulty": "Easy"
+        },
+        {
+          "id": "adf9fdcd-f0d7-486c-828b-4e173da4fd53",
+          "question": "Which operator is used for exponentiation (raising to a power) in Python?",
+          "options": [
+            "^",
+            "**",
+            "exp()",
+            "//"
+          ],
+          "correctAnswer": "**",
+          "explanation": "The `**` operator is used for exponentiation in Python (e.g., `2 ** 3` evaluates to 8). The `^` operator is for bitwise XOR, and `//` is for floor division.",
+          "questionType": "MCQ",
+          "difficulty": "Easy"
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "5819a97e-bf2e-4406-a153-bcfaa4685dac",
+      "title": "Python Basics Flashcards",
+      "userId": "user_2uzLZ3pRR1Lsku8gMixX9dmxpad",
+      "progress": 0,
+      "lastStudied": "2026-07-07T16:40:52.115Z",
+      "createdAt": "2026-07-07T16:40:52.115Z",
+      "cards": [
+        {
+          "id": "f2755cd6-c345-4563-b31e-dd797da5925a",
+          "question": "What is a Python list?",
+          "answer": "An ordered, mutable collection of items, allowing duplicates. Defined with square brackets `[]`."
+        },
+        {
+          "id": "b674cd50-2347-4532-9b20-52380c4492be",
+          "question": "How do you define a function in Python?",
+          "answer": "Using the `def` keyword, followed by the function name, parentheses for parameters, and a colon. E.g., `def my_function():`."
+        },
+        {
+          "id": "ffc086b2-4191-41a4-850b-11ed8360dc24",
+          "question": "What is a Python dictionary?",
+          "answer": "An unordered, mutable collection of unique key-value pairs. Defined with curly braces `{}`."
+        },
+        {
+          "id": "f94396f0-7e91-429b-87a1-24d46e572850",
+          "question": "How do you add comments in Python?",
+          "answer": "Use the `#` symbol for single-line comments. For multi-line, use triple quotes `\"\"\"...\"\"\"`."
+        },
+        {
+          "id": "b0e66723-8aa6-4b06-9b67-1b56303cf5d1",
+          "question": "What is the purpose of `if __name__ == \"__main__\":`?",
+          "answer": "It ensures the code inside this block only runs when the script is executed directly, not when imported as a module."
+        }
+      ]
+    }
+  ]
+}

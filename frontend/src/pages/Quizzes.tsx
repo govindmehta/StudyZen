@@ -26,6 +26,46 @@ const QuizTaking = ({ quiz, onBack }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [timeLeft, setTimeLeft] = useState((quiz.time || 10) * 60);
+
+  useEffect(() => {
+    const quizDuration = (quiz.time || 10) * 60;
+    setCurrentQuestion(0);
+    setSelectedAnswers([]);
+    setShowResults(false);
+    setTimeLeft(quizDuration);
+  }, [quiz]);
+
+  useEffect(() => {
+    if (showResults) {
+      return;
+    }
+
+    if (timeLeft <= 0) {
+      setShowResults(true);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setTimeLeft((previous) => {
+        if (previous <= 1) {
+          window.clearInterval(timer);
+          setShowResults(true);
+          return 0;
+        }
+
+        return previous - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [showResults, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
   
   const question = quiz.questions[currentQuestion];
   
@@ -82,6 +122,7 @@ const QuizTaking = ({ quiz, onBack }) => {
             setCurrentQuestion(0);
             setSelectedAnswers([]);
             setShowResults(false);
+            setTimeLeft((quiz.time || 10) * 60);
           }}>
             Try Again
           </Button>
@@ -103,7 +144,7 @@ const QuizTaking = ({ quiz, onBack }) => {
         
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{quiz.time} min remaining</span>
+          <span className="text-sm font-medium">{formatTime(timeLeft)} remaining</span>
         </div>
       </div>
       

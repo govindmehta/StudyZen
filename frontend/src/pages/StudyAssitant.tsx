@@ -230,10 +230,7 @@ const StudyAssistant = () => {
 
     // Get response from Gemini API
     try {
-      const prompt = `You are a helpful study assistant. The user is asking: "${userQuestion}"
-      Provide a helpful, educational response focused on learning. Keep your answer concise but informative.`;
-
-      const response = await fetchGeminiResponse(prompt);
+      const response = await fetchGeminiResponse(userQuestion);
 
       setChatMessages((prev) => [
         ...prev,

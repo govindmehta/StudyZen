@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   generateFlashcards,
   generateQuiz,
+  generateSchedule,
   chatStudyAssistant,
   getExplanation,
   getVideos,
@@ -19,4 +20,5 @@ studyRouter.get("/quizzes", listQuizzes);
 studyRouter.post("/generate-flashcards", generateFlashcards);
 studyRouter.get("/flashcards", listFlashcards);
 studyRouter.post("/videos", getVideos);
+studyRouter.post("/generate-schedule", generateSchedule);
 studyRouter.post("/chat", chatStudyAssistant);
