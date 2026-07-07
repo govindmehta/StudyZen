@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { buildFlashcardFallback, buildExplanationFallback, buildQuizFallback } from "../services/fallbacks.service.js";
-import { generateStudyJson } from "../services/gemini.service.js";
+import { generateStudyJson, generateStudyText } from "../services/gemini.service.js";
 import { readStore, writeStore } from "../services/store.service.js";
 import { normalizeText, toArray } from "../utils/text.js";
 
@@ -289,6 +289,28 @@ export async function getVideos(req, res, next) {
       : [];
 
     res.json({ video_links: videoLinks });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function chatStudyAssistant(req, res, next) {
+  try {
+    const message = normalizeText(req.body?.message);
+
+    if (!message) {
+      return res.status(400).json({ error: "message is required" });
+    }
+
+    const prompt = `You are a helpful study assistant. The user is asking: "${message}"
+Provide a helpful, educational response focused on learning. Keep your answer concise but informative.`;
+
+    const response = await generateStudyText(
+      prompt,
+      "Sorry, I couldn't generate a response at this time."
+    );
+
+    res.json({ response });
   } catch (error) {
     next(error);
   }

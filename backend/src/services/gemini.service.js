@@ -21,3 +21,17 @@ export async function generateStudyJson(prompt, fallback) {
     return fallback;
   }
 }
+
+export async function generateStudyText(prompt, fallbackText) {
+  if (!model) {
+    return fallbackText;
+  }
+
+  try {
+    const result = await model.generateContent(prompt);
+    return result.response.text().trim() || fallbackText;
+  } catch (error) {
+    console.error("Gemini text generation failed:", error.message);
+    return fallbackText;
+  }
+}

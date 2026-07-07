@@ -20,8 +20,6 @@ import Loader from "@/components/Loader";
 
 import { useUser } from "@clerk/clerk-react";
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
 // Markdown components configuration
 const markdownComponents = {
   code({ node, inline, className, children, ...props }) {
@@ -208,33 +206,13 @@ const StudyAssistant = () => {
   };
 
   const fetchGeminiResponse = async (prompt) => {
-    // Your Gemini API integration
     try {
-      // Replace with your actual Gemini API endpoint and key
       const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          },
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            // You would typically store this in an environment variable
-            // "x-goog-api-key": process.env.NEXT_PUBLIC_GEMINI_API_KEY
-          },
-        }
+        `http://localhost:5000/chat`,
+        { message: prompt }
       );
 
-      return (
-        response.data.candidates[0]?.content?.parts[0]?.text ||
-        "I couldn't generate a response at this time."
-      );
+      return response.data.response || "I couldn't generate a response at this time.";
     } catch (error) {
       console.error("Gemini API error:", error);
       return "Sorry, I encountered an error while processing your request.";
