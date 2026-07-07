@@ -153,7 +153,8 @@ const StudyAssistant = () => {
   const fetchYoutubeLinks = async () => {
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/videos/?topic=${query}`
+        `http://localhost:5000/videos`,
+        { topic: query }
       );
       setYoutubeLinks(response.data.video_links);
       console.log("YouTube Links:", response.data.video_links);
@@ -171,7 +172,8 @@ const StudyAssistant = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/explaination/?subtopic=${query}`
+        `http://localhost:5000/explaination`,
+        { subtopic: query }
       );
 
       console.log("Response:", response.data);

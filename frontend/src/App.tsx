@@ -136,7 +136,6 @@ import HomePage from "./pages/HomePage";
 import Table from "./pages/Table";
 import Flashcards from "./pages/Flashcards";
 import StudyAssistant from "./pages/StudyAssitant";
-import FlowChart from "./pages/FlowChart";
 
 const queryClient = new QueryClient();
 
@@ -222,16 +221,6 @@ const App = () => (
             <ProtectedRoute>
               <MainLayout>
                 <Flashcards />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/flow-chart"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <FlowChart />
               </MainLayout>
             </ProtectedRoute>
           }
